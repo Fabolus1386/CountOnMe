@@ -47,7 +47,7 @@ class CalculationTestCase: XCTestCase {
     }
     
     // Simple multiplication 8x3=24
-    func testWhenHeightPerThree_ThenResultShouldBeTwentyFour(){
+    func testWhenEightPerThree_ThenResultShouldBeTwentyFour(){
         let myCalculation = Calculation()
         
         myCalculation.tappedNumber(numberText: "8")
@@ -59,7 +59,7 @@ class CalculationTestCase: XCTestCase {
     }
     
     // Divivion with integer result 8/2=4
-    func testWhenHeightDividedByTwo_ThenResultShouldBeFour(){
+    func testWhenEightDividedByTwo_ThenResultShouldBeFour(){
         let myCalculation = Calculation()
         
         myCalculation.tappedNumber(numberText: "8")
@@ -83,7 +83,7 @@ class CalculationTestCase: XCTestCase {
     }
     
     // Add, sub, multi and divi in same calculation 8+2x4-3/2=14.5
-    func testWhenHeightPlusTwoPerFourMinusThreeDividedByTwo_ThenResultShouldBeFourteenPointFive(){
+    func testWhenEightPlusTwoPerFourMinusThreeDividedByTwo_ThenResultShouldBeFourteenPointFive(){
         let myCalculation = Calculation()
         
         myCalculation.tappedNumber(numberText: "8")
@@ -114,6 +114,26 @@ class CalculationTestCase: XCTestCase {
         myCalculation.result()
         
         XCTAssert(myCalculation.elements.last == "0")
+    }
+    
+    // Check priority to the division 2-3x3/3x4/2=-4
+    func testWhenTwoMinusThreeperThreeOnThreePerFourOnTwo_ThenResultShouldBeMinusFour(){
+        let myCalculation = Calculation()
+        
+        myCalculation.tappedNumber(numberText: "2")
+        myCalculation.substraction()
+        myCalculation.tappedNumber(numberText: "3")
+        myCalculation.multiplication()
+        myCalculation.tappedNumber(numberText: "3")
+        myCalculation.division()
+        myCalculation.tappedNumber(numberText: "3")
+        myCalculation.multiplication()
+        myCalculation.tappedNumber(numberText: "4")
+        myCalculation.division()
+        myCalculation.tappedNumber(numberText: "2")
+        myCalculation.result()
+        
+        XCTAssert(myCalculation.elements.last == "-4")
     }
     
     // Check the reintialisation of the calculation if operand tapped after a calculation

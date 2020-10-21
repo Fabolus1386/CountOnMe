@@ -13,10 +13,16 @@ class Calculation {
     // Parameter to store the text of the calculation
     var calculationText: String = ""
     
+    // Parameter to round the result if not a decimal number
+    var resultString:String!
+    
     // Array of selected elements
     var elements: [String] {
         return calculationText.split(separator: " ").map { "\($0)" }
     }
+    
+    // Parameter used to calculate the result
+    var operationsToReduce: [String]!
     
     // Error check computed variables
     var expressionIsCorrect: Bool {
@@ -33,11 +39,10 @@ class Calculation {
         return elements.last != "+" && elements.last != "-" && elements.last != "x" && elements.last != "/" && elements.first != nil
     }
     
-    //
+    // Check if an operation has already been done
     var expressionHaveResult: Bool {
         return calculationText.firstIndex(of: "=") != nil
     }
-    
     
     //Method for tapped number
     func tappedNumber(numberText: String) {
@@ -50,7 +55,9 @@ class Calculation {
     
     //Method for addition
     func addition() {
-        calculationText.append(" + ")
+        if canAddOperator{
+            calculationText.append(" + ")
+        }
         
         // Reset calculation if result already received
         if expressionHaveResult {
@@ -61,7 +68,9 @@ class Calculation {
     
     //Method for substraction
     func substraction() {
-        calculationText.append(" - ")
+        if canAddOperator{
+            calculationText.append(" - ")
+        }
         
         // Reset calculation if result already received
         if expressionHaveResult {
@@ -71,7 +80,9 @@ class Calculation {
     
     //Method for multiplication
     func multiplication() {
-        calculationText.append(" x ")
+        if canAddOperator{
+            calculationText.append(" x ")
+        }
         
         // Reset calculation if result already received
         if expressionHaveResult {
@@ -81,7 +92,9 @@ class Calculation {
     
     //Method for division
     func division() {
-        calculationText.append(" / ")
+        if canAddOperator{
+            calculationText.append(" / ")
+        }
         
         // Reset calculation if result already received
         if expressionHaveResult {
@@ -89,82 +102,132 @@ class Calculation {
         }
     }
     
-    //Method for result
+    // Method for result
     func result() {
         // Create local copy of operations for result method
-        var operationsToReduce = elements
+        operationsToReduce = elements
         
-        // Iterate over operations while an operand still here
-        while operationsToReduce.count > 1 {
-            
-            // Priority to multiplication and division
-            while operationsToReduce.contains("x") || operationsToReduce.contains("/") {
-                for i in 0...(operationsToReduce.count-1) {
-                    
-                    // Make sure i is still in the range
-                    if i > 1 && i <= operationsToReduce.count-1 {
+        // Reset calculation if result already received
+        if expressionHaveResult {
+            calculationText = ""
+        } else {
+            // Iterate over operations while an operand still here
+            while operationsToReduce.count > 1 {
+                
+                // Priority to multiplication and division
+                divisionResult()
+                
+                // Then, priority to multiplication and division
+                multiplicationResult()
+                
+                // Check if addition and substractions are still in the array
+                additionAndSubstractionResult()
+            }
+            calculationText.append(" = \(operationsToReduce.first!)")
+        }
+    }
+    
+    //Method to remove the decimal of the Double if result is an integer
+    private func roundResult(result: Double) {
+        if result == Double(Int(result)) {
+            let roundResult = Int(result)
+            resultString = String(roundResult)
+        } else {
+            resultString = String(result)
+        }
+    }
+    
+    //Priority to division
+    private func divisionResult(){
+        while operationsToReduce.contains("/"){
+            for i in 0...(operationsToReduce.count-1) {
+                // Make sure i is still in the range
+                if i > 1 && i <= operationsToReduce.count-1 {
+
+                    // Find the multiplication and divisions
+                    if operationsToReduce[i-1] == "/" {
                         
-                        // Find the multiplication and divisions
-                        if operationsToReduce[i-1] == "x" || operationsToReduce[i-1] == "/" {
-                            
-                            // Assign the numbers and operand of the local operation
-                            let left = Double(operationsToReduce[i-2])!
-                            let operand = operationsToReduce[i-1]
-                            let right = Double(operationsToReduce[i])!
-                            
-                            //Make the local operation
-                            var result: Double
-                            switch operand {
-                            case "x": result = left * right
-                            case "/": result = left / right
-                            default: fatalError("Unknown operator !")
-                            }
-                            
-                            // Round the result if no decimal needed
-                            if result == Double(Int(result)) {
-                                let roundResult = Int(result)
-                                operationsToReduce.insert("\(roundResult)", at: i+1)
-                            } else {
-                                operationsToReduce.insert("\(result)", at: i+1)
-                            }
-                            print(operationsToReduce)
-                            
-                            operationsToReduce.remove(at: i)
-                            operationsToReduce.remove(at: i-1)
-                            operationsToReduce.remove(at: i-2)
-                            
-                            print(operationsToReduce)
+                        // Assign the numbers and operand of the local operation
+                        let left = Double(operationsToReduce[i-2])!
+                        let operand = operationsToReduce[i-1]
+                        let right = Double(operationsToReduce[i])!
+                        
+                        //Make the local operation
+                        var result: Double
+                        switch operand {
+                        case "/": result = left / right
+                        default: fatalError("Unknown operator !")
                         }
+                        
+                        // Round the result if no decimal needed
+                        roundResult(result: result)
+                        operationsToReduce.insert(resultString, at: i+1)
+                        
+                        operationsToReduce.remove(at: i)
+                        operationsToReduce.remove(at: i-1)
+                        operationsToReduce.remove(at: i-2)
                     }
                 }
             }
-            
-            // Check if addition and substractions are still in the array
-            if operationsToReduce.count >= 3 {
-                let left = Double(operationsToReduce[0])!
-                let operand = operationsToReduce[1]
-                let right = Double(operationsToReduce[2])!
-                
-                var result: Double
-                switch operand {
-                case "+": result = left + right
-                case "-": result = left - right
-                case "=": return
-                default: fatalError("Unknown operator !")
-                }
-                
-                operationsToReduce = Array(operationsToReduce.dropFirst(3))
-                
-                // Round the result if no decimal needed
-                if result == Double(Int(result)) {
-                    let roundResult = Int(result)
-                    operationsToReduce.insert("\(roundResult)", at: 0)
-                } else {
-                    operationsToReduce.insert("\(result)", at: 0)
+        }
+    }
+    
+    // Multiplication result
+    private func multiplicationResult(){
+        while operationsToReduce.contains("x"){
+            for i in 0...(operationsToReduce.count-1) {
+                // Make sure i is still in the range
+                if i > 1 && i <= operationsToReduce.count-1 {
+
+                    // Find the multiplication and divisions
+                    if operationsToReduce[i-1] == "x" {
+                        
+                        // Assign the numbers and operand of the local operation
+                        let left = Double(operationsToReduce[i-2])!
+                        let operand = operationsToReduce[i-1]
+                        let right = Double(operationsToReduce[i])!
+                        
+                        //Make the local operation
+                        var result: Double
+                        switch operand {
+                        case "x": result = left * right
+                        default: fatalError("Unknown operator !")
+                        }
+                        
+                        // Round the result if no decimal needed
+                        roundResult(result: result)
+                        operationsToReduce.insert(resultString, at: i+1)
+                        
+                        operationsToReduce.remove(at: i)
+                        operationsToReduce.remove(at: i-1)
+                        operationsToReduce.remove(at: i-2)
+                    }
                 }
             }
         }
-        calculationText.append(" = \(operationsToReduce.first!)")
+    }
+    
+    // Addition and substraction
+    private func additionAndSubstractionResult(){
+        if operationsToReduce.count >= 3 {
+            let left = Double(operationsToReduce[0])!
+            let operand = operationsToReduce[1]
+            let right = Double(operationsToReduce[2])!
+            
+            var result: Double
+            switch operand {
+            case "+": result = left + right
+            case "-": result = left - right
+            case "=": return
+            default: fatalError("Unknown operator !")
+            }
+            
+            operationsToReduce = Array(operationsToReduce.dropFirst(3))
+            
+            // Round the result if no decimal needed
+            roundResult(result: result)
+            operationsToReduce.insert(resultString, at: 0)
+        }
     }
     
 }

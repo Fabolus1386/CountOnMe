@@ -42,47 +42,43 @@ class ViewController: UIViewController {
     }
     
     @IBAction func tappedAdditionButton(_ sender: UIButton) {
-        if myCalculation.canAddOperator {
-            myCalculation.addition()
-            
-            //Refresh the text by calling below method
-            attributeText()
-        } else {
+        myCalculation.addition()
+        attributeText()
+        
+        guard myCalculation.canAddOperator == false else {
             alert(title: "Zéro !", message: "Un operateur est déja mis !")
+            return
         }
     }
     
     @IBAction func tappedSubstractionButton(_ sender: UIButton) {
-        if myCalculation.canAddOperator {
-            myCalculation.substraction()
-            
-            //Refresh the text by calling below method
-            attributeText()
-        } else {
+        myCalculation.substraction()
+        attributeText()
+        
+        guard myCalculation.canAddOperator == false else {
             alert(title: "Zéro !", message: "Un operateur est déja mis !")
+            return
         }
     }
     
     
     @IBAction func tappedMultiplicationButton(_ sender: UIButton) {
-        if myCalculation.canAddOperator {
-            myCalculation.multiplication()
-            
-            //Refresh the text by calling below method
-            attributeText()
-        } else {
+        myCalculation.multiplication()
+        attributeText()
+        
+        guard myCalculation.canAddOperator == false else {
             alert(title: "Zéro !", message: "Un operateur est déja mis !")
+            return
         }
     }
     
     @IBAction func tappedDivisionButton(_ sender: UIButton) {
-        if myCalculation.canAddOperator {
-            myCalculation.division()
-            
-            //Refresh the text by calling below method
-            attributeText()
-        } else {
+        myCalculation.division()
+        attributeText()
+        
+        guard myCalculation.canAddOperator == false else {
             alert(title: "Zéro !", message: "Un operateur est déja mis !")
+            return
         }
     }
     
