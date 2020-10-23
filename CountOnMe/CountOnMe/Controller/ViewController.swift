@@ -45,7 +45,7 @@ class ViewController: UIViewController {
         myCalculation.addition()
         attributeText()
         
-        guard myCalculation.canAddOperator == false else {
+        guard !myCalculation.canAddOperator else {
             alert(title: "Zéro !", message: "Un operateur est déja mis !")
             return
         }
@@ -55,7 +55,7 @@ class ViewController: UIViewController {
         myCalculation.substraction()
         attributeText()
         
-        guard myCalculation.canAddOperator == false else {
+        guard !myCalculation.canAddOperator else {
             alert(title: "Zéro !", message: "Un operateur est déja mis !")
             return
         }
@@ -66,7 +66,7 @@ class ViewController: UIViewController {
         myCalculation.multiplication()
         attributeText()
         
-        guard myCalculation.canAddOperator == false else {
+        guard !myCalculation.canAddOperator else {
             alert(title: "Zéro !", message: "Un operateur est déja mis !")
             return
         }
@@ -76,7 +76,7 @@ class ViewController: UIViewController {
         myCalculation.division()
         attributeText()
         
-        guard myCalculation.canAddOperator == false else {
+        guard !myCalculation.canAddOperator else {
             alert(title: "Zéro !", message: "Un operateur est déja mis !")
             return
         }
