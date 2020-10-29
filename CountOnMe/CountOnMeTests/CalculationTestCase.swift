@@ -161,5 +161,17 @@ class CalculationTestCase: XCTestCase {
         
         XCTAssert(myCalculation.elements.first == "4")
     }
+    
+    // Divivion with decimal result 7/2=3.5
+    func testWhenFiveDividedByZero_ThenNoResultAndElementsEmpty(){
+        let myCalculation = Calculation()
+        
+        myCalculation.tappedNumber(numberText: "5")
+        myCalculation.division()
+        myCalculation.tappedNumber(numberText: "0")
+        myCalculation.result()
+        
+        XCTAssert(myCalculation.elements.first == nil)
+    }
 
 }

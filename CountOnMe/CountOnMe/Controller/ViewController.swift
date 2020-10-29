@@ -96,6 +96,13 @@ class ViewController: UIViewController {
         // Call the result method
         myCalculation.result()
         
+        // Check if division by zero is in the expression
+        guard !myCalculation.expressionHasNoZeroDivision else {
+            alert(title: "Zéro !", message: "La division par zero est impossible !")
+            attributeText()
+            return
+        }
+        
         //Refresh the text by calling below method
         attributeText()
     }

@@ -44,6 +44,9 @@ class Calculation {
         return calculationText.firstIndex(of: "=") != nil
     }
     
+    // Check if no division by zero
+    var expressionHasNoZeroDivision: Bool = false
+    
     //Method for tapped number
     func tappedNumber(numberText: String) {
         if expressionHaveResult {
@@ -111,19 +114,25 @@ class Calculation {
         if expressionHaveResult {
             calculationText = ""
         } else {
-            // Iterate over operations while an operand still here
-            while operationsToReduce.count > 1 {
-                
-                // Priority to multiplication and division
-                divisionResult()
-                
-                // Then, priority to multiplication and division
-                multiplicationResult()
-                
-                // Check if addition and substractions are still in the array
-                additionAndSubstractionResult()
+            // Check if a division bt zero exists
+            zeroDivision()
+            
+            if expressionHasNoZeroDivision == false {
+                // Iterate over operations while an operand still here
+                while operationsToReduce.count > 1 {
+                    
+                    // Priority to multiplication and division
+                    multiplicationDivisionResult(orepand: "/")
+                    
+                    // Then, priority to multiplication and division
+                    multiplicationDivisionResult(orepand: "x")
+                    
+                    // Check if addition and substractions are still in the array
+                    additionAndSubstractionResult()
+                }
+                calculationText.append(" = \(operationsToReduce.first!)")
             }
-            calculationText.append(" = \(operationsToReduce.first!)")
+
         }
     }
     
@@ -137,50 +146,16 @@ class Calculation {
         }
     }
     
-    //Priority to division
-    private func divisionResult(){
-        while operationsToReduce.contains("/"){
-            for i in 0...(operationsToReduce.count-1) {
-                // Make sure i is still in the range
-                if i > 1 && i <= operationsToReduce.count-1 {
-
-                    // Find the multiplication and divisions
-                    if operationsToReduce[i-1] == "/" {
-                        
-                        // Assign the numbers and operand of the local operation
-                        let left = Double(operationsToReduce[i-2])!
-                        let operand = operationsToReduce[i-1]
-                        let right = Double(operationsToReduce[i])!
-                        
-                        //Make the local operation
-                        var result: Double
-                        switch operand {
-                        case "/": result = left / right
-                        default: fatalError("Unknown operator !")
-                        }
-                        
-                        // Round the result if no decimal needed
-                        roundResult(result: result)
-                        operationsToReduce.insert(resultString, at: i+1)
-                        
-                        operationsToReduce.remove(at: i)
-                        operationsToReduce.remove(at: i-1)
-                        operationsToReduce.remove(at: i-2)
-                    }
-                }
-            }
-        }
-    }
     
     // Multiplication result
-    private func multiplicationResult(){
-        while operationsToReduce.contains("x"){
+    private func multiplicationDivisionResult(orepand: String){
+        while operationsToReduce.contains(orepand){
             for i in 0...(operationsToReduce.count-1) {
                 // Make sure i is still in the range
                 if i > 1 && i <= operationsToReduce.count-1 {
 
                     // Find the multiplication and divisions
-                    if operationsToReduce[i-1] == "x" {
+                    if operationsToReduce[i-1] == orepand {
                         
                         // Assign the numbers and operand of the local operation
                         let left = Double(operationsToReduce[i-2])!
@@ -191,6 +166,7 @@ class Calculation {
                         var result: Double
                         switch operand {
                         case "x": result = left * right
+                        case "/": result = left / right
                         default: fatalError("Unknown operator !")
                         }
                         
@@ -227,6 +203,24 @@ class Calculation {
             // Round the result if no decimal needed
             roundResult(result: result)
             operationsToReduce.insert(resultString, at: 0)
+        }
+    }
+    
+    // Method to check if division by zero is in the expression
+    private func zeroDivision(){
+        for i in 0...(elements.count-1) {
+            // Make sure i is still in the range
+            if i > 1 && i <= elements.count-1 {
+                
+                // Find the divisions and check if followed by zero
+                if elements[i-1] == "/" && elements[i] == "0" {
+                    print("division impossible")
+                    calculationText = ""
+                    expressionHasNoZeroDivision = true
+                } else {
+                    expressionHasNoZeroDivision = false
+                }
+            }
         }
     }
     
